@@ -1,0 +1,71 @@
+---
+import styles from "./hero.module.css";
+---
+
+<section class={styles.hero} aria-label="Holly Salsa">
+	<article class={styles.canvas}>
+		<div class={styles.decorLayer} aria-hidden="true">
+			<span class={`${styles.decorIcon} ${styles.leaf} ${styles.leaf1}`}></span>
+			<span class={`${styles.decorIcon} ${styles.leaf} ${styles.leaf2}`}></span>
+			<span class={`${styles.decorIcon} ${styles.leaf} ${styles.leaf3}`}></span>
+			<span class={`${styles.decorIcon} ${styles.leaf} ${styles.leaf4}`}></span>
+			<span class={`${styles.decorIcon} ${styles.leaf} ${styles.leaf5}`}></span>
+
+			<span class={`${styles.decorIcon} ${styles.artesanal} ${styles.artesanal1}`}></span>
+			<span class={`${styles.decorIcon} ${styles.artesanal} ${styles.artesanal2}`}></span>
+			<span class={`${styles.decorIcon} ${styles.artesanal} ${styles.artesanal3}`}></span>
+			<span class={`${styles.decorIcon} ${styles.artesanal} ${styles.artesanal4}`}></span>
+			<span class={`${styles.decorIcon} ${styles.artesanal} ${styles.artesanal5}`}></span>
+
+			<span class={`${styles.decorIcon} ${styles.pepper} ${styles.pepper1}`}></span>
+			<span class={`${styles.decorIcon} ${styles.pepper} ${styles.pepper2}`}></span>
+			<span class={`${styles.decorIcon} ${styles.pepper} ${styles.pepper3}`}></span>
+			<span class={`${styles.decorIcon} ${styles.pepper} ${styles.pepper4}`}></span>
+			<span class={`${styles.decorIcon} ${styles.pepper} ${styles.pepper5}`}></span>
+		</div>
+
+		<div class={styles.content}>
+			<h1 class={`brand ${styles.brandName}`}>HOLLY SALSA</h1>
+			<a href="/products" class={styles.ctaButton}>
+				Ir a comprar
+			</a>
+		</div>
+
+		<img
+			src="/media/asada.webp"
+			alt="Botella de Holly Salsa Piña Asada"
+			width="860"
+			height="1828"
+			loading="eager"
+			decoding="async"
+			class={`${styles.bottle} ${styles.bottleLeft} ${styles.asada}`}
+		/>
+		<img
+			src="/media/fresa-picante.webp"
+			alt="Botella de Holly Salsa Fresa Picante"
+			width="860"
+			height="1828"
+			loading="eager"
+			decoding="async"
+			class={`${styles.bottle} ${styles.bottleRight} ${styles.fresa}`}
+		/>
+		<img
+			src="/media/cinco-chiles.webp"
+			alt="Botella de Holly Salsa Cinco Chiles"
+			width="860"
+			height="1828"
+			loading="eager"
+			decoding="async"
+			class={`${styles.bottle} ${styles.bottleRight} ${styles.cincoChiles}`}
+		/>
+		<img
+			src="/media/habanero.webp"
+			alt="Botella de Holly Salsa Habanero"
+			width="860"
+			height="1828"
+			loading="eager"
+			decoding="async"
+			class={`${styles.bottle} ${styles.bottleLeft} ${styles.habanero}`}
+		/>
+	</article>
+</section>

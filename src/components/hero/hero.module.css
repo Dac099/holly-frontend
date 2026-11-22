@@ -1,0 +1,438 @@
+.hero {
+	width: 100%;
+	height: 100svh;
+	min-height: 54rem;
+	display: grid;
+	place-items: center;
+	background-color: var(--color-primary);
+	view-timeline-name: --hero-timeline;
+	view-timeline-axis: block;
+}
+
+.canvas {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: grid;
+	place-items: center;
+	background-color: var(--color-action);
+	color: var(--color-primary);
+	overflow: clip;
+}
+
+.decorLayer {
+	position: absolute;
+	inset: 0;
+	z-index: 5;
+	pointer-events: none;
+	user-select: none;
+}
+
+.decorIcon {
+	--icon-size: clamp(44px, min(7vw, 10svh), 100px);
+	position: absolute;
+	width: var(--icon-size);
+	height: var(--icon-size);
+	display: block;
+	background-color: var(--color-primary);
+	opacity: 0.25;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	transform: translate(-50%, -50%);
+}
+
+.leaf {
+	-webkit-mask-image: url("/icons/leaf.svg");
+	mask-image: url("/icons/leaf.svg");
+}
+
+.artesanal {
+	-webkit-mask-image: url("/icons/artesanal.svg");
+	mask-image: url("/icons/artesanal.svg");
+}
+
+.pepper {
+	-webkit-mask-image: url("/icons/pepper-3.svg");
+	mask-image: url("/icons/pepper-3.svg");
+}
+
+.leaf1 {
+	top: 9%;
+	left: 6%;
+	rotate: -18deg;
+}
+
+.leaf2 {
+	top: 14%;
+	left: 53%;
+	rotate: 24deg;
+}
+
+.leaf3 {
+	top: 48%;
+	left: 19%;
+	rotate: 12deg;
+}
+
+.leaf4 {
+	top: 63%;
+	left: 82%;
+	rotate: -26deg;
+}
+
+.leaf5 {
+	top: 88%;
+	left: 37%;
+	rotate: 19deg;
+}
+
+.artesanal1 {
+	top: 12%;
+	left: 31%;
+	rotate: 15deg;
+}
+
+.artesanal2 {
+	top: 17%;
+	left: 79%;
+	rotate: -20deg;
+}
+
+.artesanal3 {
+	top: 44%;
+	left: 89%;
+	rotate: 28deg;
+}
+
+.artesanal4 {
+	top: 72%;
+	left: 58%;
+	rotate: -14deg;
+}
+
+.artesanal5 {
+	top: 85%;
+	left: 14%;
+	rotate: 22deg;
+}
+
+.pepper1 {
+	top: 26%;
+	left: 15%;
+	rotate: 30deg;
+}
+
+.pepper2 {
+	top: 29%;
+	left: 68%;
+	rotate: -25deg;
+}
+
+.pepper3 {
+	top: 56%;
+	left: 7%;
+	rotate: -16deg;
+}
+
+.pepper4 {
+	top: 78%;
+	left: 91%;
+	rotate: 18deg;
+}
+
+.pepper5 {
+	top: 91%;
+	left: 66%;
+	rotate: -28deg;
+}
+
+.content {
+	position: relative;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	padding-inline: 2rem;
+	text-align: center;
+}
+
+.brandName {
+	margin: 0;
+	font-family: var(--font-brand);
+	font-size: clamp(5.2rem, 8.5vw, 15rem);
+	font-weight: 400;
+	line-height: 1.1;
+	letter-spacing: 0.04em;
+	text-align: center;
+	text-transform: uppercase;
+	color: var(--color-primary);
+}
+
+.ctaButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(0.9rem, 1.1vw, 1.4rem) clamp(2.2rem, 2.8vw, 3.8rem);
+	background-color: transparent;
+	color: var(--color-primary);
+	border: 2px solid var(--color-primary);
+	border-radius: 999px;
+	font-family: var(--font-body);
+	font-size: clamp(1.4rem, 1.4vw, 2.2rem);
+	font-weight: 400;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		transform 0.2s ease;
+}
+
+.ctaButton:hover,
+.ctaButton:focus-visible {
+	background-color: var(--color-primary);
+	color: var(--color-action);
+	transform: translateY(-2px);
+}
+
+.ctaButton:focus-visible {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 4px;
+}
+
+.bottle {
+	--outline-size: 1rem;
+	--outline-u: calc(var(--outline-size) * 0.414 / var(--outline-scale, 1));
+	--outline-v: calc(var(--outline-size) * 0.293 / var(--outline-scale, 1));
+	position: absolute;
+	z-index: 1;
+	height: clamp(16.5rem, min(calc(12.5rem + 6.3vw), 27vh), 24rem);
+	width: auto;
+	max-width: none;
+	pointer-events: none;
+	user-select: none;
+	filter:
+		drop-shadow(var(--outline-u) 0 0 var(--color-primary)) drop-shadow(calc(var(--outline-u) * -1) 0 0 var(--color-primary)) drop-shadow(0 var(--outline-u) 0 var(--color-primary)) drop-shadow(0 calc(var(--outline-u) * -1) 0 var(--color-primary)) drop-shadow(var(--outline-v) var(--outline-v) 0 var(--color-primary)) drop-shadow(calc(var(--outline-v) * -1) var(--outline-v) 0 var(--color-primary)) drop-shadow(var(--outline-v) calc(var(--outline-v) * -1) 0 var(--color-primary)) drop-shadow(calc(var(--outline-v) * -1) calc(var(--outline-v) * -1) 0 var(--color-primary)) drop-shadow(0 1rem 2rem rgb(5 5 3 / 0.28));
+	will-change: translate;
+}
+
+.asada {
+	--outline-scale: 1.6;
+	top: -7%;
+	left: 10%;
+	rotate: 40deg;
+	scale: 1.6;
+}
+
+.fresa {
+	--outline-scale: 1.6;
+	top: 3%;
+	right: 2%;
+	rotate: -20deg;
+	scale: 1.6;
+}
+
+.cincoChiles {
+	--outline-scale: 2.5;
+	bottom: -4%;
+	right: clamp(4rem, 9vw, 14rem);
+	rotate: -65deg;
+	scale: 2.5;
+}
+
+.habanero {
+	--outline-scale: 3;
+	bottom: 3%;
+	left: 10%;
+	rotate: 332deg;
+	scale: 3;
+}
+
+@media (max-width: 900px) and (min-width: 720px) {
+	.asada {
+		--outline-scale: 1.35;
+		scale: 1.35;
+		left: 6%;
+	}
+
+	.fresa {
+		--outline-scale: 1.35;
+		scale: 1.35;
+		right: 1%;
+	}
+
+	.cincoChiles {
+		--outline-scale: 2;
+		scale: 2;
+		right: clamp(3rem, 7vw, 8rem);
+	}
+
+	.habanero {
+		--outline-scale: 2.3;
+		scale: 2.3;
+		left: 6%;
+	}
+}
+
+@media (max-width: 719px) {
+	.canvas {
+		align-items: start;
+		justify-items: center;
+		padding-top: 8svh;
+	}
+
+	.brandName {
+		font-size: clamp(3.2rem, 10vw, 5.2rem);
+	}
+
+	.bottle {
+		height: clamp(16rem, min(46vw, 31svh), 26rem);
+		top: auto;
+		right: auto;
+		bottom: auto;
+		left: auto;
+	}
+
+	.habanero {
+		display: none;
+	}
+
+	.asada {
+		--outline-scale: 1.6;
+		bottom: 8%;
+		left: 26%;
+		z-index: 3;
+		rotate: -22deg;
+		scale: 1.6;
+	}
+
+	.fresa {
+		--outline-scale: 1.8;
+		bottom: 16%;
+		left: 40%;
+		z-index: 2;
+		rotate: -22deg;
+		scale: 1.8;
+	}
+
+	.cincoChiles {
+		--outline-scale: 2;
+		bottom: 24%;
+		left: 57%;
+		z-index: 1;
+		rotate: -22deg;
+		scale: 2;
+	}
+}
+
+@keyframes slideOutLeft {
+	from {
+		translate: 0 0;
+	}
+
+	to {
+		translate: -35vw 0;
+	}
+}
+
+@keyframes slideOutRight {
+	from {
+		translate: 0 0;
+	}
+
+	to {
+		translate: 35vw 0;
+	}
+}
+
+@keyframes ellipticOutRight {
+	0% {
+		translate: 0 0;
+	}
+
+	12.5% {
+		translate: 2.9vw -5.4svh;
+	}
+
+	25% {
+		translate: 11.1vw -9.9svh;
+	}
+
+	37.5% {
+		translate: 23.5vw -12.9svh;
+	}
+
+	50% {
+		translate: 38vw -14svh;
+	}
+
+	62.5% {
+		translate: 52.5vw -12.9svh;
+	}
+
+	75% {
+		translate: 64.9vw -9.9svh;
+	}
+
+	87.5% {
+		translate: 73.1vw -5.4svh;
+	}
+
+	100% {
+		translate: 76vw 0;
+	}
+}
+
+@supports (animation-timeline: view()) {
+	@media (min-width: 720px) and (prefers-reduced-motion: no-preference) {
+		.bottleLeft {
+			animation-name: slideOutLeft;
+			animation-duration: auto;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: --hero-timeline;
+			animation-range: exit 0% exit 100%;
+		}
+
+		.bottleRight {
+			animation-name: slideOutRight;
+			animation-duration: auto;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: --hero-timeline;
+			animation-range: exit 0% exit 100%;
+		}
+	}
+
+	@media (max-width: 719px) and (prefers-reduced-motion: no-preference) {
+
+		.asada,
+		.fresa,
+		.cincoChiles {
+			animation-name: ellipticOutRight;
+			animation-duration: auto;
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: --hero-timeline;
+		}
+
+		.cincoChiles {
+			animation-range: exit 0% exit 86%;
+		}
+
+		.fresa {
+			animation-range: exit 6% exit 93%;
+		}
+
+		.asada {
+			animation-range: exit 12% exit 100%;
+		}
+	}
+}

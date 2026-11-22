@@ -1,0 +1,241 @@
+.showcase {
+	width: 100%;
+	height: 100dvh;
+	min-height: 60rem;
+	padding: clamp(1.2rem, 2vw, 2.5rem);
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	gap: clamp(1.6rem, 2.5dvh, 2.8rem);
+	background-color: var(--color-primary);
+}
+
+.mediaGrid {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-rows: repeat(2, minmax(0, 1fr));
+	gap: clamp(0.8rem, 1.1vw, 1.6rem);
+}
+
+.mediaItem {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	overflow: hidden;
+	border-radius: 0.4rem;
+	background-color: var(--color-action);
+}
+
+.mediaAsset {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: cover;
+}
+
+.itemPico {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.itemBotellas {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.itemVideo {
+	grid-column: 2;
+	grid-row: 1 / span 2;
+}
+
+.itemCarniceria {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+.itemChiles {
+	grid-column: 3;
+	grid-row: 2;
+}
+
+.itemFlores {
+	grid-column: 4;
+	grid-row: 1 / span 2;
+}
+
+.badgesViewport {
+	width: 100%;
+	overflow: hidden;
+	padding-block: clamp(0.4rem, 1dvh, 1rem);
+}
+
+.badgesTrack {
+	width: 100%;
+}
+
+.badgesList {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	gap: clamp(1.2rem, 2.2vw, 3rem);
+	width: 100%;
+}
+
+.badgesClone {
+	display: none;
+}
+
+.badge {
+	flex: 0 0 auto;
+	width: clamp(12.5rem, min(16vw, 22dvh), 18rem);
+	aspect-ratio: 1 / 1;
+	border-radius: 50%;
+	padding: clamp(1rem, 1.4vw, 1.6rem);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: clamp(0.4rem, 0.7dvh, 0.8rem);
+	background-color: var(--color-action);
+	color: var(--color-primary);
+	text-align: center;
+	box-shadow: 0 0.6rem 1.6rem rgb(5 5 3 / 0.14);
+	transition: transform 0.25s ease;
+}
+
+.badge:hover {
+	transform: translateY(-4px);
+}
+
+.badgeImage {
+	height: 52%;
+	width: auto;
+	max-width: 65%;
+	object-fit: contain;
+	filter: drop-shadow(0 0.4rem 0.6rem rgb(5 5 3 / 0.32));
+	pointer-events: none;
+	user-select: none;
+}
+
+.badgeText {
+	font-family: var(--font-body);
+	font-size: clamp(1.05rem, min(1.15vw, 1.6dvh), 1.45rem);
+	font-weight: 400;
+	line-height: 1.15;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-wrap: balance;
+	max-width: 90%;
+}
+
+@media (max-width: 719px) {
+	.showcase {
+		padding: 1.2rem 1rem 1.8rem;
+		gap: 1.6rem;
+		min-height: 56rem;
+	}
+
+	.mediaGrid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-rows: repeat(12, minmax(0, 1fr));
+		gap: 0.8rem;
+	}
+
+	.itemPico {
+		grid-column: 1;
+		grid-row: 1 / 7;
+	}
+
+	.itemBotellas {
+		grid-column: 1;
+		grid-row: 7 / 13;
+	}
+
+	.itemCarniceria {
+		grid-column: 2;
+		grid-row: 1 / 6;
+	}
+
+	.itemChiles {
+		grid-column: 2;
+		grid-row: 6 / 12;
+	}
+
+	.itemVideo {
+		grid-column: 3;
+		grid-row: 1 / 8;
+	}
+
+	.itemFlores {
+		grid-column: 3;
+		grid-row: 8 / 13;
+	}
+
+	.badgesViewport {
+		--badge-gap: 1.4rem;
+		margin-inline: -1rem;
+		width: calc(100% + 2rem);
+	}
+
+	.badgesTrack {
+		display: flex;
+		width: max-content;
+		animation: badgeMarquee 18s linear infinite;
+		will-change: transform;
+	}
+
+	.badgesTrack:hover {
+		animation-play-state: paused;
+	}
+
+	.badgesList {
+		width: auto;
+		justify-content: flex-start;
+		gap: var(--badge-gap);
+		padding-right: var(--badge-gap);
+	}
+
+	.badgesClone {
+		display: flex;
+	}
+
+	.badge {
+		width: clamp(11.5rem, 30vw, 13.5rem);
+		padding: 1rem;
+	}
+
+	.badgeText {
+		font-size: clamp(1rem, 2.8vw, 1.2rem);
+	}
+}
+
+@keyframes badgeMarquee {
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (max-width: 719px) and (prefers-reduced-motion: reduce) {
+	.badgesViewport {
+		overflow-x: auto;
+	}
+
+	.badgesTrack {
+		animation: none;
+	}
+
+	.badgesClone {
+		display: none;
+	}
+}
+
