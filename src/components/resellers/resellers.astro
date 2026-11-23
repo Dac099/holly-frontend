@@ -1,0 +1,255 @@
+---
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import styles from './resellers.module.css';
+
+interface ReviewItem {
+	id: string;
+	src: string;
+	width: number;
+	height: number;
+	label: string;
+	alt: string;
+}
+
+const ICON_SIZE = 60;
+const ICON_GAP = 10;
+const CELL_STEP = ICON_SIZE + ICON_GAP;
+const TILE_COLS = 5;
+const TILE_ROWS = 4;
+const TILE_WIDTH = TILE_COLS * CELL_STEP;
+const TILE_HEIGHT = TILE_ROWS * CELL_STEP;
+const ROW_OFFSETS = [0, 32, 14, 48];
+const SLOT_ANGLES = [-14, 11, -7, 16, -12, 13, -16, 8, -10, 15, -6, 14, -15, 9, -11, 12, -8, 15, -13, 7];
+const SLOT_FLIPS = [1, -1, 1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, 1, -1, 1, -1];
+
+const spicySvgRaw = readFileSync(join(process.cwd(), 'public', 'icons', 'spicy.svg'), 'utf8');
+const viewBoxMatch = spicySvgRaw.match(/viewBox="([^"]+)"/);
+const pathMatch = spicySvgRaw.match(/<path[^>]*\sd="([^"]+)"/);
+const [vbX, vbY, vbW, vbH] = (viewBoxMatch?.[1] ?? '0 0 202.288 202.288')
+	.trim()
+	.split(/[\s,]+/)
+	.map(Number);
+const iconW = Number.isFinite(vbW) && vbW > 0 ? vbW : 202.288;
+const iconH = Number.isFinite(vbH) && vbH > 0 ? vbH : 202.288;
+const originX = (Number.isFinite(vbX) ? vbX : 0) + iconW / 2;
+const originY = (Number.isFinite(vbY) ? vbY : 0) + iconH / 2;
+const iconScale = ICON_SIZE / Math.max(iconW, iconH);
+const spicyPathData = (pathMatch?.[1] ?? '').replace(/\s+/g, ' ').trim();
+
+const useInstances: string[] = [];
+const pushIconUse = (x: number, y: number, deg: number, flip: number) => {
+	const cx = x + ICON_SIZE / 2;
+	const cy = y + ICON_SIZE / 2;
+	const sx = (iconScale * flip).toFixed(5);
+	const sy = iconScale.toFixed(5);
+	useInstances.push(
+		`<use href="#s" transform="translate(${cx.toFixed(2)} ${cy.toFixed(2)}) rotate(${deg}) scale(${sx} ${sy}) translate(${(-originX).toFixed(3)} ${(-originY).toFixed(3)})"/>`,
+	);
+};
+
+for (let row = 0; row < TILE_ROWS; row += 1) {
+	const y = ICON_GAP / 2 + row * CELL_STEP;
+	const rowOffset = ROW_OFFSETS[row % ROW_OFFSETS.length];
+
+	for (let col = 0; col < TILE_COLS; col += 1) {
+		const slotIndex = row * TILE_COLS + col;
+		const x = (rowOffset + col * CELL_STEP) % TILE_WIDTH;
+		const deg = SLOT_ANGLES[slotIndex % SLOT_ANGLES.length];
+		const flip = SLOT_FLIPS[slotIndex % SLOT_FLIPS.length];
+
+		pushIconUse(x, y, deg, flip);
+		if (x + ICON_SIZE >= TILE_WIDTH - ICON_GAP) {
+			pushIconUse(x - TILE_WIDTH, y, deg, flip);
+		}
+		if (x <= ICON_GAP) {
+			pushIconUse(x + TILE_WIDTH, y, deg, flip);
+		}
+	}
+}
+
+const tileSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${TILE_WIDTH}" height="${TILE_HEIGHT}" viewBox="0 0 ${TILE_WIDTH} ${TILE_HEIGHT}"><defs><path id="s" fill="#000" d="${spicyPathData}"/></defs>${useInstances.join('')}</svg>`;
+const spicyPatternUri = `data:image/svg+xml,${encodeURIComponent(tileSvg)}`;
+
+const reviews: ReviewItem[] = [
+	{
+		id: 'review-1',
+		src: '/media/review-1.webp',
+		width: 610,
+		height: 524,
+		label: 'Reseña de La Andaluza en Santa Elena',
+		alt: 'Captura de WhatsApp de La Andaluza en Santa Elena pidiendo más salsas porque les ha gustado mucho a sus clientes',
+	},
+	{
+		id: 'review-2',
+		src: '/media/review-2.webp',
+		width: 738,
+		height: 1336,
+		label: 'Reseña de cliente en Toluca',
+		alt: 'Captura de WhatsApp de un cliente en Toluca preguntando en qué otra tienda puede volver a comprar la salsa porque se le acabó',
+	},
+	{
+		id: 'review-3',
+		src: '/media/review-3.webp',
+		width: 738,
+		height: 1336,
+		label: 'Reseña de pedido recurrente de caja de salsas',
+		alt: 'Captura de WhatsApp de un negocio pidiendo otra caja de salsas repetidamente',
+	},
+	{
+		id: 'review-4',
+		src: '/media/review-4.webp',
+		width: 738,
+		height: 1336,
+		label: 'Reseña de reabastecimiento frecuente',
+		alt: 'Captura de WhatsApp de la señorita Martha solicitando más salsas repetidamente',
+	},
+	{
+		id: 'review-5',
+		src: '/media/review-5.webp',
+		width: 3000,
+		height: 4000,
+		label: 'Fotografía de cliente en Cárnicos Chuy',
+		alt: 'Fotografía de un distribuidor en Cárnicos Chuy sonriendo junto al exhibidor de botellas de Holly Salsa en su mostrador',
+	},
+];
+---
+
+<section
+	class={styles.resellersSection}
+	aria-labelledby="resellers-section-title"
+	data-resellers-section
+>
+	<div
+		class={styles.patternLayer}
+		style={`--spicy-pattern: url("${spicyPatternUri}")`}
+		aria-hidden="true"
+	></div>
+
+	<div class={styles.stageColumn} data-resellers-stage>
+		<div class={styles.reviewField} data-resellers-field>
+			{
+				reviews.map((review) => (
+					<figure
+						class={styles.reviewCard}
+						style={`--card-aspect: ${review.width} / ${review.height}`}
+						data-review-card
+						data-review-id={review.id}
+						data-review-label={review.label}
+						data-aspect={String(review.width / review.height)}
+					>
+						<img
+							src={review.src}
+							alt={review.alt}
+							width={review.width}
+							height={review.height}
+							loading="lazy"
+							decoding="async"
+							draggable="false"
+							class={styles.reviewImage}
+						/>
+					</figure>
+				))
+			}
+		</div>
+
+		<div class={styles.srOnly} aria-live="polite" data-resellers-live></div>
+	</div>
+
+	<header class={styles.header}>
+		<h2 id="resellers-section-title" class={styles.title}>
+			Holly Salsa en tu negocio
+		</h2>
+		<p class={styles.dragHint} data-resellers-hint data-visible="false">
+			Arrastra las reseñas
+		</p>
+	</header>
+
+	<div class={styles.contentGrid}>
+		<div class={styles.copyColumn}>
+			<p class={styles.description}>
+				El sabor de Holly Salsa se comparte y por ello contamos con el paquete especial para negocios.
+			</p>
+			<p class={styles.description}>
+				Contamos con varios clientes en el centro del país que ya integran los productos de Holly Salsa en sus negocios.
+			</p>
+			<a href="/products" class={styles.ctaButton}>
+				Adquiere el paquete de salsas para tu negocio
+			</a>
+		</div>
+	</div>
+
+	<dialog
+		class={styles.reviewModal}
+		{...({ closedby: 'any' } as Record<string, string>)}
+		aria-label="Vista ampliada de la reseña"
+		data-resellers-modal
+	>
+		<img
+			alt=""
+			decoding="async"
+			draggable="false"
+			class={styles.modalImage}
+			data-resellers-modal-image
+		/>
+		<form method="dialog" class={styles.modalForm}>
+			<button type="submit" class={styles.modalClose}>
+				Cerrar reseña
+			</button>
+		</form>
+	</dialog>
+</section>
+
+<script>
+	import { initResellersModal } from './resellersModal';
+
+	const sections = document.querySelectorAll<HTMLElement>('[data-resellers-section]');
+
+	for (const section of sections) {
+		const stage = section.querySelector<HTMLElement>('[data-resellers-stage]');
+		const field = section.querySelector<HTMLElement>('[data-resellers-field]');
+		const hint = section.querySelector<HTMLElement>('[data-resellers-hint]');
+		const liveRegion = section.querySelector<HTMLElement>('[data-resellers-live]');
+		const modal = section.querySelector<HTMLDialogElement>('[data-resellers-modal]');
+		const modalImage = section.querySelector<HTMLImageElement>('[data-resellers-modal-image]');
+		const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-review-card]'));
+
+		if (!stage || !field || cards.length === 0) continue;
+
+		const modalController =
+			modal && modalImage
+				? initResellersModal({
+						dialog: modal,
+						image: modalImage,
+						cards,
+					})
+				: null;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				import('./resellersRain')
+					.then(({ initResellersRain }) => {
+						initResellersRain({
+							section,
+							stage,
+							field,
+							hint,
+							liveRegion,
+							cards,
+							onOpenReview: modalController
+								? (card) => modalController.openCard(card, { defer: true })
+								: undefined,
+						});
+					})
+					.catch(() => {
+						// Static collage remains visible and readable as fallback
+					});
+			},
+			{ rootMargin: '600px 0px' },
+		);
+
+		observer.observe(section);
+	}
+</script>
