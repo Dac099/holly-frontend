@@ -1,5 +1,6 @@
 ---
 import styles from "./hero.module.css";
+import Nav from "../nav/nav.astro";
 ---
 
 <section class={styles.hero} aria-label="Holly Salsa">
@@ -29,6 +30,7 @@ import styles from "./hero.module.css";
 			<a href="/products" class={styles.ctaButton}>
 				Ir a comprar
 			</a>
+			<Nav class={styles.heroNav} />
 		</div>
 
 		<img

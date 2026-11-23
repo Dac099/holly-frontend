@@ -153,12 +153,17 @@
 .content {
 	position: relative;
 	z-index: 10;
+	inline-size: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 20px;
 	padding-inline: 2rem;
 	text-align: center;
+}
+
+.heroNav {
+	margin-block-start: calc(5rem - 20px);
 }
 
 .brandName {
@@ -286,6 +291,10 @@
 		align-items: start;
 		justify-items: center;
 		padding-top: 8svh;
+	}
+
+	.content {
+		padding-inline: 1.2rem;
 	}
 
 	.brandName {

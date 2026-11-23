@@ -1,0 +1,110 @@
+.nav {
+	inline-size: min(100%, 56rem);
+	container-type: inline-size;
+	border-block-start: 0;
+	border-inline: 0;
+	border-block-end: 2px solid var(--color-primary);
+	border-radius: 0;
+}
+
+.list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.item {
+	display: flex;
+	min-inline-size: 0;
+}
+
+.link {
+	inline-size: 100%;
+	min-block-size: 4.4rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-block: 1rem;
+	padding-inline: clamp(0.4rem, 1.8vw, 1.6rem);
+	background-color: transparent;
+	color: var(--color-primary);
+	border: 0;
+	border-radius: 0;
+	font-family: var(--font-body);
+	font-size: clamp(0.85rem, 2.4vw, 1.6rem);
+	font-weight: 400;
+	line-height: 1.2;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background-color 300ms ease,
+		color 300ms ease;
+}
+
+@supports (font-size: 1cqi) {
+	.link {
+		font-size: clamp(0.85rem, 2.6cqi, 1.6rem);
+		padding-inline: clamp(0.4rem, 1.8cqi, 1.6rem);
+	}
+}
+
+.item:first-child .link {
+	border-inline-end: 1px solid var(--color-primary);
+}
+
+.item:last-child .link {
+	border-inline-start: 1px solid var(--color-primary);
+}
+
+.link:hover,
+.link:focus-visible,
+.link[aria-current='page'] {
+	background-color: var(--color-primary);
+	color: var(--color-action);
+}
+
+.link[aria-current='page'] {
+	text-decoration: underline;
+	text-underline-offset: 0.3em;
+	text-decoration-thickness: 2px;
+}
+
+.link:focus-visible {
+	position: relative;
+	z-index: 1;
+	outline: 2px solid var(--color-primary);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.link {
+		transition: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.nav {
+		border-block-end-color: CanvasText;
+	}
+
+	.item:first-child .link {
+		border-inline-end-color: CanvasText;
+	}
+
+	.item:last-child .link {
+		border-inline-start-color: CanvasText;
+	}
+
+	.link:focus-visible {
+		outline-color: Highlight;
+	}
+
+	.link[aria-current='page'] {
+		text-decoration: underline;
+	}
+}
