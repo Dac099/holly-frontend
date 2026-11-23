@@ -1,4 +1,8 @@
 import Matter from 'matter-js';
+import {
+	createResellersFireworks,
+	type ResellersFireworksController,
+} from './resellersFireworks';
 
 export interface ResellersRainElements {
 	section: HTMLElement;
@@ -6,6 +10,7 @@ export interface ResellersRainElements {
 	field: HTMLElement;
 	hint: HTMLElement | null;
 	liveRegion: HTMLElement | null;
+	fireworksCanvas?: HTMLCanvasElement | null;
 	cards: HTMLElement[];
 	onOpenReview?: (card: HTMLElement) => void;
 }
@@ -28,6 +33,7 @@ interface ReviewCardState {
 	body: Matter.Body | null;
 	spawned: boolean;
 	enteredStage: boolean;
+	hasLandedInitially: boolean;
 }
 
 interface ActiveDrag {
@@ -61,6 +67,9 @@ const MOUSE_DRAG_THRESHOLD_PX = 4;
 const TOUCH_DRAG_THRESHOLD_PX = 14;
 const DOUBLE_TAP_DELAY_MS = 420;
 const DOUBLE_TAP_MAX_DIST_PX = 44;
+const AIRBORNE_CLEARANCE_PX = 14;
+const GROUNDED_CLEARANCE_PX = 8;
+const AIRBORNE_HOLD_MS = 120;
 
 // Staggered release delays (ms) and interleaved horizontal lane indices
 const SPAWN_DELAYS_MS = [0, 260, 540, 820, 1100];
@@ -136,17 +145,25 @@ export function initResellersRain({
 	field,
 	hint,
 	liveRegion,
+	fireworksCanvas,
 	cards: cardElements,
 	onOpenReview,
 }: ResellersRainElements): () => void {
 	const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 	let prefersReducedMotion = reducedMotionQuery.matches;
 
+	const fireworks: ResellersFireworksController | null = fireworksCanvas
+		? createResellersFireworks(fireworksCanvas, section)
+		: null;
+
 	let disposed = false;
 	let physicsInitialized = false;
 	let hasDropped = false;
 	let hasInteracted = false;
 	let ceilingAdded = false;
+	let hasCompletedInitialFall = false;
+	let needsLandingToRearm = false;
+	let airborneElapsedMs = 0;
 	let isSkipped = false;
 
 	let stageWidth = 0;
@@ -155,6 +172,7 @@ export function initResellersRain({
 
 	let engine: Matter.Engine | null = null;
 	let staticWalls: Matter.Body[] = [];
+	let floorWall: Matter.Body | null = null;
 	let ceilingWall: Matter.Body | null = null;
 	let activeDrag: ActiveDrag | null = null;
 	let pendingDrag: PendingDrag | null = null;
@@ -179,6 +197,7 @@ export function initResellersRain({
 			body: null,
 			spawned: false,
 			enteredStage: false,
+			hasLandedInitially: false,
 		};
 	});
 
@@ -216,16 +235,20 @@ export function initResellersRain({
 		setHintVisible(false);
 	};
 
-	const announceMove = (label: string, directionText: string) => {
-		if (!liveRegion) return;
-		liveRegion.textContent = `${label} ${directionText}`;
+	const announce = (text: string, clearDelayMs = 1000) => {
+		if (!liveRegion || section.querySelector('dialog[open]') !== null) return;
+		liveRegion.textContent = text;
 		if (liveClearTimer !== null) {
 			window.clearTimeout(liveClearTimer);
 		}
 		liveClearTimer = window.setTimeout(() => {
 			if (liveRegion) liveRegion.textContent = '';
 			liveClearTimer = null;
-		}, 1000);
+		}, clearDelayMs);
+	};
+
+	const announceMove = (label: string, directionText: string) => {
+		announce(`${label} ${directionText}`);
 	};
 
 	const wakeAllBodies = () => {
@@ -256,6 +279,7 @@ export function initResellersRain({
 		if (staticWalls.length > 0) {
 			Matter.Composite.remove(engine.world, staticWalls);
 			staticWalls = [];
+			floorWall = null;
 		}
 		if (ceilingWall) {
 			Matter.Composite.remove(engine.world, ceilingWall);
@@ -289,6 +313,7 @@ export function initResellersRain({
 			WALL_OPTIONS,
 		);
 
+		floorWall = floor;
 		staticWalls = [floor, leftWall, rightWall];
 		Matter.Composite.add(engine.world, staticWalls);
 
@@ -346,6 +371,101 @@ export function initResellersRain({
 		Matter.Composite.add(engine.world, ceilingWall);
 	};
 
+	const updateInitialFallState = () => {
+		if (hasCompletedInitialFall || !ceilingAdded) return;
+		if (!cardStates.every((state) => state.spawned && state.body !== null && state.enteredStage)) {
+			return;
+		}
+
+		for (let pass = 0; pass < cardStates.length; pass += 1) {
+			let changed = false;
+			for (const state of cardStates) {
+				if (state.hasLandedInitially || !state.body) continue;
+
+				const isNearFloor = stageHeight - state.body.bounds.max.y <= GROUNDED_CLEARANCE_PX;
+				const touchesFloor =
+					floorWall !== null && Matter.Collision.collides(state.body, floorWall) !== null;
+				let restsOnLandedCard = false;
+
+				if (!state.body.isSleeping && !isNearFloor && !touchesFloor && state.body.velocity.y >= -2) {
+					for (const other of cardStates) {
+						if (other === state || !other.hasLandedInitially || !other.body) continue;
+						if (Matter.Collision.collides(state.body, other.body) !== null) {
+							restsOnLandedCard = true;
+							break;
+						}
+					}
+				}
+
+				if (state.body.isSleeping || isNearFloor || touchesFloor || restsOnLandedCard) {
+					state.hasLandedInitially = true;
+					changed = true;
+				}
+			}
+			if (!changed) break;
+		}
+
+		if (cardStates.every((state) => state.hasLandedInitially)) {
+			hasCompletedInitialFall = true;
+		}
+	};
+
+	const evaluateAirborneEasterEgg = (stepMs: number) => {
+		if (
+			!hasCompletedInitialFall ||
+			!hasInteracted ||
+			prefersReducedMotion ||
+			isSkipped ||
+			document.hidden
+		) {
+			return;
+		}
+		if (!cardStates.every((state) => state.spawned && state.body !== null)) {
+			return;
+		}
+
+		const anyGrounded = cardStates.some((state) => {
+			if (!state.body) return false;
+			const isNearFloor = stageHeight - state.body.bounds.max.y <= GROUNDED_CLEARANCE_PX;
+			const touchesFloor =
+				floorWall !== null && Matter.Collision.collides(state.body, floorWall) !== null;
+			return isNearFloor || touchesFloor;
+		});
+
+		if (anyGrounded) {
+			needsLandingToRearm = false;
+			airborneElapsedMs = 0;
+			return;
+		}
+
+		const allAirborne = cardStates.every((state) => {
+			if (!state.body) return false;
+			const hasClearance = stageHeight - state.body.bounds.max.y >= AIRBORNE_CLEARANCE_PX;
+			const touchesFloor =
+				floorWall !== null && Matter.Collision.collides(state.body, floorWall) !== null;
+			const isHeldOrAwake = !state.body.isSleeping || activeDrag?.card === state;
+			return hasClearance && !touchesFloor && isHeldOrAwake;
+		});
+
+		if (!allAirborne) {
+			airborneElapsedMs = 0;
+			return;
+		}
+
+		if (needsLandingToRearm) return;
+
+		airborneElapsedMs += stepMs;
+		if (airborneElapsedMs >= AIRBORNE_HOLD_MS) {
+			needsLandingToRearm = true;
+			airborneElapsedMs = 0;
+			fireworks?.trigger();
+			announce(
+				'¡Sorpresa desbloqueada! Fuegos artificiales por mantener todas las reseñas en el aire.',
+				3000,
+			);
+		}
+	};
+
 	const canPauseIdleLoop = (): boolean => {
 		if (!hasDropped || activeDrag !== null) return false;
 		if (!cardStates.every((state) => state.spawned && state.body)) return false;
@@ -365,6 +485,9 @@ export function initResellersRain({
 		let substeps = 0;
 		while (accumulatorMs >= FIXED_STEP_MS && substeps < 3) {
 			Matter.Engine.update(engine, FIXED_STEP_MS);
+			maybeActivateCeiling();
+			updateInitialFallState();
+			evaluateAirborneEasterEgg(FIXED_STEP_MS);
 			accumulatorMs -= FIXED_STEP_MS;
 			substeps += 1;
 		}
@@ -372,7 +495,6 @@ export function initResellersRain({
 			accumulatorMs = 0;
 		}
 
-		maybeActivateCeiling();
 		renderCards();
 
 		if (canPauseIdleLoop()) {
@@ -731,6 +853,7 @@ export function initResellersRain({
 
 	const teardownPhysics = () => {
 		stopLoop();
+		fireworks?.stop();
 		clearSpawnTimers();
 		visibilityTriggerObserver?.disconnect();
 		visibilityTriggerObserver = null;
@@ -746,10 +869,14 @@ export function initResellersRain({
 		}
 
 		staticWalls = [];
+		floorWall = null;
 		ceilingWall = null;
 		physicsInitialized = false;
 		hasDropped = false;
 		ceilingAdded = false;
+		hasCompletedInitialFall = false;
+		needsLandingToRearm = false;
+		airborneElapsedMs = 0;
 
 		field.removeAttribute('data-physics-active');
 		setHintVisible(false);
@@ -758,6 +885,7 @@ export function initResellersRain({
 			state.body = null;
 			state.spawned = false;
 			state.enteredStage = false;
+			state.hasLandedInitially = false;
 			state.el.removeAttribute('data-ready');
 			state.el.removeAttribute('data-dragging');
 			state.el.removeAttribute('data-last-drag-at');
@@ -835,8 +963,13 @@ export function initResellersRain({
 		}
 
 		const prevWidth = Math.max(1, stageWidth);
+		if (nextHeight > stageHeight) {
+			needsLandingToRearm = true;
+			airborneElapsedMs = 0;
+		}
 		stageWidth = nextWidth;
 		stageHeight = nextHeight;
+		fireworks?.resize();
 
 		for (const state of cardStates) {
 			const prevSize = state.size;
@@ -876,6 +1009,7 @@ export function initResellersRain({
 		if (document.hidden) {
 			releaseActiveDrag();
 			stopLoop();
+			fireworks?.stop();
 		} else if (hasDropped && !isSkipped && !prefersReducedMotion) {
 			wakeAllBodies();
 			startLoop();
@@ -888,6 +1022,7 @@ export function initResellersRain({
 		if (isSkipped) {
 			releaseActiveDrag();
 			stopLoop();
+			fireworks?.stop();
 		} else if (hasDropped && !document.hidden && !prefersReducedMotion) {
 			startLoop();
 		}
@@ -921,6 +1056,7 @@ export function initResellersRain({
 				if (isSkipped) {
 					releaseActiveDrag();
 					stopLoop();
+					fireworks?.stop();
 				} else if (hasDropped && !document.hidden && !prefersReducedMotion) {
 					startLoop();
 				}
@@ -942,5 +1078,6 @@ export function initResellersRain({
 		document.removeEventListener('visibilitychange', onVisibilityChange);
 		reducedMotionQuery.removeEventListener('change', onReducedMotionChange);
 		teardownPhysics();
+		fireworks?.destroy();
 	};
 }

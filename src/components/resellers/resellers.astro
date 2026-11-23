@@ -1,5 +1,5 @@
 ---
-import styles from './resellers.module.css';
+import styles from "./resellers.module.css";
 
 interface ReviewItem {
 	id: string;
@@ -12,44 +12,44 @@ interface ReviewItem {
 
 const reviews: ReviewItem[] = [
 	{
-		id: 'review-1',
-		src: '/media/review-1.webp',
+		id: "review-1",
+		src: "/media/review-1.webp",
 		width: 610,
 		height: 524,
-		label: 'Reseña de La Andaluza en Santa Elena',
-		alt: 'Captura de WhatsApp de La Andaluza en Santa Elena pidiendo más salsas porque les ha gustado mucho a sus clientes',
+		label: "Reseña de La Andaluza en Santa Elena",
+		alt: "Captura de WhatsApp de La Andaluza en Santa Elena pidiendo más salsas porque les ha gustado mucho a sus clientes",
 	},
 	{
-		id: 'review-2',
-		src: '/media/review-2.webp',
+		id: "review-2",
+		src: "/media/review-2.webp",
 		width: 738,
 		height: 1336,
-		label: 'Reseña de cliente en Toluca',
-		alt: 'Captura de WhatsApp de un cliente en Toluca preguntando en qué otra tienda puede volver a comprar la salsa porque se le acabó',
+		label: "Reseña de cliente en Toluca",
+		alt: "Captura de WhatsApp de un cliente en Toluca preguntando en qué otra tienda puede volver a comprar la salsa porque se le acabó",
 	},
 	{
-		id: 'review-3',
-		src: '/media/review-3.webp',
+		id: "review-3",
+		src: "/media/review-3.webp",
 		width: 738,
 		height: 1336,
-		label: 'Reseña de pedido recurrente de caja de salsas',
-		alt: 'Captura de WhatsApp de un negocio pidiendo otra caja de salsas repetidamente',
+		label: "Reseña de pedido recurrente de caja de salsas",
+		alt: "Captura de WhatsApp de un negocio pidiendo otra caja de salsas repetidamente",
 	},
 	{
-		id: 'review-4',
-		src: '/media/review-4.webp',
+		id: "review-4",
+		src: "/media/review-4.webp",
 		width: 738,
 		height: 1336,
-		label: 'Reseña de reabastecimiento frecuente',
-		alt: 'Captura de WhatsApp de la señorita Martha solicitando más salsas repetidamente',
+		label: "Reseña de reabastecimiento frecuente",
+		alt: "Captura de WhatsApp de la señorita Martha solicitando más salsas repetidamente",
 	},
 	{
-		id: 'review-5',
-		src: '/media/review-5.webp',
+		id: "review-5",
+		src: "/media/review-5.webp",
 		width: 3000,
 		height: 4000,
-		label: 'Fotografía de cliente en Cárnicos Chuy',
-		alt: 'Fotografía de un distribuidor en Cárnicos Chuy sonriendo junto al exhibidor de botellas de Holly Salsa en su mostrador',
+		label: "Fotografía de cliente en Cárnicos Chuy",
+		alt: "Fotografía de un distribuidor en Cárnicos Chuy sonriendo junto al exhibidor de botellas de Holly Salsa en su mostrador",
 	},
 ];
 ---
@@ -63,29 +63,27 @@ const reviews: ReviewItem[] = [
 
 	<div class={styles.stageColumn} data-resellers-stage>
 		<div class={styles.reviewField} data-resellers-field>
-			{
-				reviews.map((review) => (
-					<figure
-						class={styles.reviewCard}
-						style={`--card-aspect: ${review.width} / ${review.height}`}
-						data-review-card
-						data-review-id={review.id}
-						data-review-label={review.label}
-						data-aspect={String(review.width / review.height)}
-					>
-						<img
-							src={review.src}
-							alt={review.alt}
-							width={review.width}
-							height={review.height}
-							loading="lazy"
-							decoding="async"
-							draggable="false"
-							class={styles.reviewImage}
-						/>
-					</figure>
-				))
-			}
+			{reviews.map((review) => (
+				<figure
+					class={styles.reviewCard}
+					style={`--card-aspect: ${review.width} / ${review.height}`}
+					data-review-card
+					data-review-id={review.id}
+					data-review-label={review.label}
+					data-aspect={String(review.width / review.height)}
+				>
+					<img
+						src={review.src}
+						alt={review.alt}
+						width={review.width}
+						height={review.height}
+						loading="lazy"
+						decoding="async"
+						draggable="false"
+						class={styles.reviewImage}
+					/>
+				</figure>
+			))}
 		</div>
 
 		<div class={styles.srOnly} aria-live="polite" data-resellers-live></div>
@@ -95,18 +93,24 @@ const reviews: ReviewItem[] = [
 		<h2 id="resellers-section-title" class={styles.title}>
 			Holly Salsa en tu negocio
 		</h2>
+		<p class={styles.reviewInvite}>
+			Ayudanos a llenar este espacio con tu reseña sobre nuestros
+			productos.
+		</p>
 		<p class={styles.dragHint} data-resellers-hint data-visible="false">
-			Arrastra las reseñas
+			Arrastra las reseñas e interactúa para descubrir una sorpresa.
 		</p>
 	</header>
 
 	<div class={styles.contentGrid}>
 		<div class={styles.copyColumn}>
 			<p class={styles.description}>
-				El sabor de Holly Salsa se comparte y por ello contamos con el paquete especial para negocios.
+				El sabor de Holly Salsa se comparte y por ello contamos con el
+				paquete especial para negocios.
 			</p>
 			<p class={styles.description}>
-				Contamos con varios clientes en el centro del país que ya integran los productos de Holly Salsa en sus negocios.
+				Contamos con varios clientes en el centro del país que ya
+				integran los productos de Holly Salsa en sus negocios.
 			</p>
 			<a href="/products" class={styles.ctaButton}>
 				Adquiere el paquete de salsas para tu negocio
@@ -114,9 +118,16 @@ const reviews: ReviewItem[] = [
 		</div>
 	</div>
 
+	<canvas
+		class={styles.fireworksCanvas}
+		aria-hidden="true"
+		data-resellers-fireworks
+		data-active="false"
+	></canvas>
+
 	<dialog
 		class={styles.reviewModal}
-		{...({ closedby: 'any' } as Record<string, string>)}
+		{...({ closedby: "any" } as Record<string, string>)}
 		aria-label="Vista ampliada de la reseña"
 		data-resellers-modal
 	>
@@ -136,18 +147,37 @@ const reviews: ReviewItem[] = [
 </section>
 
 <script>
-	import { initResellersModal } from './resellersModal';
+	import { initResellersModal } from "./resellersModal";
 
-	const sections = document.querySelectorAll<HTMLElement>('[data-resellers-section]');
+	const sections = document.querySelectorAll<HTMLElement>(
+		"[data-resellers-section]",
+	);
 
 	for (const section of sections) {
-		const stage = section.querySelector<HTMLElement>('[data-resellers-stage]');
-		const field = section.querySelector<HTMLElement>('[data-resellers-field]');
-		const hint = section.querySelector<HTMLElement>('[data-resellers-hint]');
-		const liveRegion = section.querySelector<HTMLElement>('[data-resellers-live]');
-		const modal = section.querySelector<HTMLDialogElement>('[data-resellers-modal]');
-		const modalImage = section.querySelector<HTMLImageElement>('[data-resellers-modal-image]');
-		const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-review-card]'));
+		const stage = section.querySelector<HTMLElement>(
+			"[data-resellers-stage]",
+		);
+		const field = section.querySelector<HTMLElement>(
+			"[data-resellers-field]",
+		);
+		const hint = section.querySelector<HTMLElement>(
+			"[data-resellers-hint]",
+		);
+		const liveRegion = section.querySelector<HTMLElement>(
+			"[data-resellers-live]",
+		);
+		const modal = section.querySelector<HTMLDialogElement>(
+			"[data-resellers-modal]",
+		);
+		const modalImage = section.querySelector<HTMLImageElement>(
+			"[data-resellers-modal-image]",
+		);
+		const fireworksCanvas = section.querySelector<HTMLCanvasElement>(
+			"[data-resellers-fireworks]",
+		);
+		const cards = Array.from(
+			section.querySelectorAll<HTMLElement>("[data-review-card]"),
+		);
 
 		if (!stage || !field || cards.length === 0) continue;
 
@@ -164,7 +194,7 @@ const reviews: ReviewItem[] = [
 			(entries) => {
 				if (!entries.some((entry) => entry.isIntersecting)) return;
 				observer.disconnect();
-				import('./resellersRain')
+				import("./resellersRain")
 					.then(({ initResellersRain }) => {
 						initResellersRain({
 							section,
@@ -172,9 +202,13 @@ const reviews: ReviewItem[] = [
 							field,
 							hint,
 							liveRegion,
+							fireworksCanvas,
 							cards,
 							onOpenReview: modalController
-								? (card) => modalController.openCard(card, { defer: true })
+								? (card) =>
+										modalController.openCard(card, {
+											defer: true,
+										})
 								: undefined,
 						});
 					})
@@ -182,7 +216,7 @@ const reviews: ReviewItem[] = [
 						// Static collage remains visible and readable as fallback
 					});
 			},
-			{ rootMargin: '600px 0px' },
+			{ rootMargin: "600px 0px" },
 		);
 
 		observer.observe(section);
