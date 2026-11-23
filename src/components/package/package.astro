@@ -1,0 +1,131 @@
+---
+import styles from './package.module.css';
+
+interface StoryStep {
+	text: string;
+	side: 'left' | 'right';
+}
+
+const storySteps: StoryStep[] = [
+	{
+		text: 'Todas nuestras salsas en una presentación',
+		side: 'left',
+	},
+	{
+		text: 'Una caja diseñada para ofrecerte la mejor experiencia',
+		side: 'right',
+	},
+	{
+		text: 'Pensamos en ofrecerte un producto de calidad inigualable en un paquete que refleja nuestro amor por nuestro producto.',
+		side: 'left',
+	},
+	{
+		text: 'Tenemos respeto por el picante y por el sabor, nuestras salsas lo demuestran',
+		side: 'right',
+	},
+	{
+		text: 'Habanero, Cinco chiles, Piña asada, Fresa picante, Mora tamarindo y Mango habanero.',
+		side: 'left',
+	},
+	{
+		text: 'Adquiere tu paquete y conoce lo que creamos para ti.',
+		side: 'right',
+	},
+];
+---
+
+<section
+	class={styles.packageSection}
+	aria-labelledby="package-section-title"
+	data-package-section
+>
+	<div class={styles.stickyStage}>
+		<header class={styles.header}>
+			<h2 id="package-section-title" class={styles.title}>
+				Creamos un paquete para los amantes del picante
+			</h2>
+			<p class={styles.scrollHint} data-package-hint data-visible="true">
+				Sigue bajando para descubrir el contenido <span aria-hidden="true">↓</span>
+			</p>
+		</header>
+
+		<div class={styles.viewerFrame} data-package-viewer>
+			<canvas
+				class={styles.canvas}
+				data-package-canvas
+				role="img"
+				aria-label="Modelo 3D de la caja de 6 salsas artesanales Holly Salsa que se abre al desplazarse"
+			></canvas>
+
+			<img
+				src="/media/paquete-personal.png"
+				alt="Paquete Holly Salsa con seis botellas de salsa artesanal en caja de regalo"
+				loading="lazy"
+				decoding="async"
+				class={styles.fallbackImage}
+			/>
+		</div>
+
+		<ol class={styles.storyList} aria-label="Características del paquete Holly Salsa">
+			{
+				storySteps.map((step, index) => (
+					<li
+						class={`${styles.storyItem} ${step.side === 'left' ? styles.storyLeft : styles.storyRight}`}
+						data-story-step={index}
+						data-state="before"
+					>
+						<p class={styles.storyText}>{step.text}</p>
+					</li>
+				))
+			}
+		</ol>
+
+		<div class={styles.ctaWrap} data-package-cta data-visible="false">
+			<a href="/products" class={styles.ctaButton}>
+				Adquiere la tuya
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	const sections = document.querySelectorAll<HTMLElement>('[data-package-section]');
+
+	for (const section of sections) {
+		const viewerFrame = section.querySelector<HTMLElement>('[data-package-viewer]');
+		const canvas = section.querySelector<HTMLCanvasElement>('[data-package-canvas]');
+		const scrollHint = section.querySelector<HTMLElement>('[data-package-hint]');
+		const ctaWrap = section.querySelector<HTMLElement>('[data-package-cta]');
+		const storyItems = Array.from(
+			section.querySelectorAll<HTMLElement>('[data-story-step]'),
+		);
+
+		if (!viewerFrame || !canvas) continue;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				import('./packageViewer')
+					.then(({ initPackageViewer }) => {
+						initPackageViewer({
+							section,
+							viewerFrame,
+							canvas,
+							scrollHint,
+							ctaWrap,
+							storyItems,
+						});
+					})
+					.catch(() => {
+						viewerFrame.dataset.fallback = 'true';
+						if (scrollHint) scrollHint.dataset.visible = 'false';
+						if (ctaWrap) ctaWrap.dataset.visible = 'true';
+					});
+			},
+			{ rootMargin: '600px 0px' },
+		);
+
+		observer.observe(section);
+	}
+</script>
