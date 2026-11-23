@@ -1,0 +1,161 @@
+---
+import styles from './footer.module.css';
+
+interface FooterLink {
+	href: string;
+	label: string;
+}
+
+interface SocialLink {
+	id: 'facebook' | 'instagram' | 'tiktok';
+	label: string;
+	href: string;
+}
+
+interface ContactItem {
+	id: 'email' | 'phone';
+	label: string;
+	href: string;
+	ariaLabel: string;
+}
+
+const FOOTER_LINKS: FooterLink[] = [
+	{ href: '/legal', label: 'Términos y condiciones' },
+	{ href: '/about', label: 'Acerca de Holly Salsa' },
+	{ href: '/products', label: 'Comprar' },
+	{ href: '/profile', label: 'Inicia sesión' },
+	{ href: '/cart', label: 'Tu carrito' },
+	{ href: '/', label: 'Inicio' },
+];
+
+const SOCIAL_LINKS: SocialLink[] = [
+	{
+		id: 'facebook',
+		label: 'Facebook de Holly Salsa',
+		href: 'https://www.facebook.com/profile.php?id=61595901246881',
+	},
+	{
+		id: 'instagram',
+		label: 'Instagram de Holly Salsa',
+		href: 'https://www.instagram.com/holly__salsa/',
+	},
+	{
+		id: 'tiktok',
+		label: 'TikTok de Holly Salsa',
+		href: 'https://www.tiktok.com/@hollysalsa?_r=1',
+	},
+];
+
+const CONTACT_ITEMS: ContactItem[] = [
+	{
+		id: 'email',
+		label: 'soporte@hollysalsa.com',
+		href: 'mailto:soporte@hollysalsa.com',
+		ariaLabel: 'Enviar correo a soporte@hollysalsa.com',
+	},
+	{
+		id: 'phone',
+		label: '720 665 4138',
+		href: 'tel:+527206654138',
+		ariaLabel: 'Llamar al 720 665 4138',
+	},
+];
+
+const normalizePath = (path: string) => {
+	const trimmed = path.replace(/\/+$/, '');
+	return trimmed || '/';
+};
+
+const currentPath = normalizePath(Astro.url.pathname);
+const currentYear = new Date().getFullYear();
+---
+
+<footer class={styles.footer}>
+	<div class={styles.container}>
+		<div class={styles.brandCol}>
+			<a href="/" class={styles.brandLink} aria-label="Holly Salsa, ir al inicio">
+				<img
+					src="/media/holly-icon.png"
+					alt=""
+					width="500"
+					height="500"
+					loading="lazy"
+					decoding="async"
+					class={styles.brandLogo}
+				/>
+			</a>
+		</div>
+
+		<nav class={styles.navCol} aria-label="Pie de página">
+			<ul class={styles.linksGrid}>
+				{
+					FOOTER_LINKS.map((link) => {
+						const isCurrent = normalizePath(link.href) === currentPath;
+						return (
+							<li class={styles.linkItem}>
+								<a
+									href={link.href}
+									class={styles.navLink}
+									aria-current={isCurrent ? 'page' : undefined}
+								>
+									{link.label}
+								</a>
+							</li>
+						);
+					})
+				}
+			</ul>
+		</nav>
+
+		<div class={styles.connectCol}>
+			<ul class={styles.socialList} role="list" aria-label="Redes sociales">
+				{
+					SOCIAL_LINKS.map((social) => (
+						<li class={styles.socialItem}>
+							<a
+								href={social.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								class={styles.socialLink}
+								aria-label={`${social.label} (abre en una nueva pestaña)`}
+							>
+								<span
+									class={`${styles.icon} ${styles[social.id]}`}
+									aria-hidden="true"
+								/>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+
+			<address class={styles.contactAddress}>
+				<ul class={styles.contactList} role="list">
+					{
+						CONTACT_ITEMS.map((item) => (
+							<li class={styles.contactItem}>
+								<a
+									href={item.href}
+									class={styles.contactLink}
+									aria-label={item.ariaLabel}
+								>
+									<span
+										class={`${styles.icon} ${styles.contactIcon} ${styles[item.id]}`}
+										aria-hidden="true"
+									/>
+									<span class={styles.contactText}>{item.label}</span>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</address>
+		</div>
+	</div>
+
+	<div class={styles.bottomBar}>
+		<p class={styles.copyright}>
+			&copy; {currentYear} Holly Salsa. Todos los derechos reservados.
+		</p>
+	</div>
+</footer>

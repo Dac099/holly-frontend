@@ -1,12 +1,14 @@
 ---
 import { Font } from 'astro:assets';
 import '../styles/global.css';
+import Footer from '../components/footer/footer.astro';
 
 interface Props {
 	title?: string;
+	showFooter?: boolean;
 }
 
-const { title = 'hsStore' } = Astro.props;
+const { title = 'hsStore', showFooter = true } = Astro.props;
 ---
 
 <html lang="es">
@@ -23,5 +25,6 @@ const { title = 'hsStore' } = Astro.props;
 	</head>
 	<body>
 		<slot />
+		{showFooter && <Footer />}
 	</body>
 </html>
