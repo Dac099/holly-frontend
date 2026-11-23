@@ -1,0 +1,310 @@
+---
+import styles from './flavors.module.css';
+
+interface SalsaFlavor {
+	id: string;
+	name: string;
+	heat: number;
+	image: string;
+	description: string;
+}
+
+const salsas: SalsaFlavor[] = [
+	{
+		id: 'habanero',
+		name: 'Habanero',
+		heat: 5,
+		image: '/media/habanero.webp',
+		description:
+			'Intensa, audaz y sin concesiones. Pensada para quienes buscan un picor protagonista que despierta cada bocado con carácter inolvidable.',
+	},
+	{
+		id: 'cinco-chiles',
+		name: 'Cinco chiles',
+		heat: 4,
+		image: '/media/cinco-chiles.webp',
+		description:
+			'Profunda, compleja y con un picor envolvente que evoluciona en el paladar. Ideal para transformar cualquier platillo cotidiano en una experiencia memorable.',
+	},
+	{
+		id: 'mora-tamarindo',
+		name: 'Mora tamarindo',
+		heat: 2,
+		image: '/media/mora-tamarindo.webp',
+		description:
+			'Agridulce, equilibrada y sorprendentemente adictiva. Su picor amable abraza el paladar y conquista desde la primera gota sin abrumar.',
+	},
+	{
+		id: 'mango-habanero',
+		name: 'Mango habanero',
+		heat: 4,
+		image: '/media/mango-habanero.webp',
+		description:
+			'Vibrante y tropical con un remate valiente. Comienza con una calidez jugosa que pronto da paso a un picor firme y adictivo.',
+	},
+	{
+		id: 'fresa-picante',
+		name: 'Fresa picante',
+		heat: 2,
+		image: '/media/fresa-picante.webp',
+		description:
+			'Fresca, atrevida y llena de personalidad. Combina una suavidad encantadora con un cosquilleo picante ideal para quienes disfrutan sabores fuera de lo común.',
+	},
+	{
+		id: 'pina-asada',
+		name: 'Piña asada',
+		heat: 3,
+		image: '/media/asada.webp',
+		description:
+			'Con un toque ahumado y luminoso que engancha al instante. Su picor medio y balanceado la convierte en la compañera perfecta de toda mesa.',
+	},
+];
+
+const titlePhrases = [
+	'llenas de sabor',
+	'picantes',
+	'de amantes del picante para amantes del picante',
+];
+
+const heatScale = [1, 2, 3, 4, 5];
+---
+
+<section
+	class={styles.flavorsSection}
+	aria-labelledby="flavors-section-title"
+	data-flavors-section
+>
+	<header class={styles.header} data-flavors-header>
+		<div class={styles.titleRow} data-title-row>
+			<h2 id="flavors-section-title" class={styles.title} data-flavors-title>
+				<span class={styles.titleFixed} data-title-fixed>Salsas</span>
+				<span class={styles.titleViewport} data-title-viewport aria-hidden="true">
+					{
+						titlePhrases.map((phrase, index) => (
+							<span
+								class={styles.titlePhrase}
+								data-title-phrase
+								data-state={index === 0 ? 'active' : 'waiting'}
+							>
+								{phrase}
+							</span>
+						))
+					}
+				</span>
+				<span class={styles.srOnly}>
+					llenas de sabor, picantes, de amantes del picante para amantes del picante
+				</span>
+			</h2>
+		</div>
+	</header>
+
+	<div class={styles.stageArea}>
+		<p class={styles.interactionHint}>
+			Interactúa con nuestras salsas para desvelar su información
+		</p>
+
+		<div
+			class={styles.carouselShell}
+			data-flavors-carousel
+			data-carousel-label="Sabores de Holly Salsa"
+		>
+			<div class={styles.carouselControls} data-carousel-controls>
+				<button
+					type="button"
+					class={styles.carouselNavBtn}
+					data-direction="previous"
+					aria-label="Salsa anterior"
+				>
+					<svg
+						viewBox="0 0 24 24"
+						width="20"
+						height="20"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.4"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="M15 18l-6-6 6-6"></path>
+					</svg>
+				</button>
+
+				<button
+					type="button"
+					class={styles.carouselNavBtn}
+					data-direction="next"
+					aria-label="Siguiente salsa"
+				>
+					<svg
+						viewBox="0 0 24 24"
+						width="20"
+						height="20"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.4"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="M9 18l6-6-6-6"></path>
+					</svg>
+				</button>
+			</div>
+
+			<div class={styles.bottlesTrack} data-bottles-track>
+				{
+					salsas.map((salsa, index) => (
+						<div
+							class={styles.bottleSlide}
+							data-bottle-slide
+							data-slide-index={index}
+							data-salsa-name={salsa.name}
+							data-marker-name={`Ir a ${salsa.name}`}
+							data-active={index === 0 ? 'true' : 'false'}
+						>
+							<div
+								class={styles.bottleStage}
+								data-bottle-stage
+								data-pinned="false"
+							>
+								<button
+									type="button"
+									class={styles.bottleTrigger}
+									data-bottle-trigger
+									aria-expanded="false"
+									aria-controls={`salsa-card-${salsa.id}`}
+									aria-label={`${salsa.name}, nivel de picante ${salsa.heat} de 5`}
+								>
+									<img
+										src={salsa.image}
+										alt={`Botella de Holly Salsa ${salsa.name}`}
+										width="860"
+										height="1828"
+										loading="lazy"
+										decoding="async"
+										draggable="false"
+										class={styles.bottleImage}
+									/>
+									<img
+										src={salsa.image}
+										alt=""
+										aria-hidden="true"
+										width="860"
+										height="1828"
+										loading="lazy"
+										decoding="async"
+										draggable="false"
+										class={styles.bottleShadow}
+									/>
+								</button>
+
+								<div
+									id={`salsa-card-${salsa.id}`}
+									class={styles.infoCardMask}
+									data-info-card
+									aria-hidden="true"
+								>
+									<div class={styles.infoCard}>
+										<h3 class={styles.salsaName}>{salsa.name}</h3>
+										<div
+											class={styles.heatRow}
+											role="img"
+											aria-label={`Nivel de picante: ${salsa.heat} de 5`}
+										>
+											<div class={styles.heatIcons} aria-hidden="true">
+												{heatScale.map((step) => (
+													<span
+														class={`${styles.pepperIcon} ${
+															step <= salsa.heat
+																? styles.pepperActive
+																: styles.pepperInactive
+														}`}
+													/>
+												))}
+											</div>
+											<span class={styles.heatLabel} aria-hidden="true">
+												{salsa.heat}/5
+											</span>
+										</div>
+										<p class={styles.salsaDescription}>{salsa.description}</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					))
+				}
+			</div>
+
+			<p
+				class={styles.srOnly}
+				role="status"
+				aria-live="polite"
+				data-carousel-status
+			></p>
+
+			<nav
+				class={styles.carouselMarkers}
+				aria-label="Elegir una salsa"
+				data-carousel-markers
+			></nav>
+		</div>
+	</div>
+</section>
+
+<script>
+	import { initFlavorsTitle } from './flavorsTitle';
+	import { initFlavorsInteractive } from './flavorsInteractive';
+
+	const sections = document.querySelectorAll<HTMLElement>('[data-flavors-section]');
+
+	for (const section of sections) {
+		const header = section.querySelector<HTMLElement>('[data-flavors-header]');
+		const titleRow = section.querySelector<HTMLElement>('[data-title-row]');
+		const titleEl = section.querySelector<HTMLElement>('[data-flavors-title]');
+		const titleFixed = section.querySelector<HTMLElement>('[data-title-fixed]');
+		const viewport = section.querySelector<HTMLElement>('[data-title-viewport]');
+		const phrases = Array.from(
+			section.querySelectorAll<HTMLElement>('[data-title-phrase]'),
+		);
+
+		if (header && titleRow && titleEl && titleFixed && viewport && phrases.length > 0) {
+			initFlavorsTitle({
+				section,
+				header,
+				titleRow,
+				titleEl,
+				titleFixed,
+				viewport,
+				phrases,
+			});
+		}
+
+		const carousel = section.querySelector<HTMLElement>('[data-flavors-carousel]');
+		const track = section.querySelector<HTMLElement>('[data-bottles-track]');
+		const slides = Array.from(
+			section.querySelectorAll<HTMLElement>('[data-bottle-slide]'),
+		);
+		const prevBtn = section.querySelector<HTMLButtonElement>(
+			'[data-direction="previous"]',
+		);
+		const nextBtn = section.querySelector<HTMLButtonElement>(
+			'[data-direction="next"]',
+		);
+		const markersNav = section.querySelector<HTMLElement>('[data-carousel-markers]');
+		const statusRegion = section.querySelector<HTMLElement>('[data-carousel-status]');
+
+		if (carousel && track && slides.length > 0 && prevBtn && nextBtn && markersNav && statusRegion) {
+			initFlavorsInteractive({
+				section,
+				carousel,
+				track,
+				slides,
+				prevBtn,
+				nextBtn,
+				markersNav,
+				statusRegion,
+			});
+		}
+	}
+</script>
