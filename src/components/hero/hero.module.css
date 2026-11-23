@@ -178,40 +178,6 @@
 	color: var(--color-primary);
 }
 
-.ctaButton {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: clamp(0.9rem, 1.1vw, 1.4rem) clamp(2.2rem, 2.8vw, 3.8rem);
-	background-color: transparent;
-	color: var(--color-primary);
-	border: 2px solid var(--color-primary);
-	border-radius: 999px;
-	font-family: var(--font-body);
-	font-size: clamp(1.4rem, 1.4vw, 2.2rem);
-	font-weight: 400;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	text-decoration: none;
-	cursor: pointer;
-	transition:
-		background-color 0.2s ease,
-		color 0.2s ease,
-		transform 0.2s ease;
-}
-
-.ctaButton:hover,
-.ctaButton:focus-visible {
-	background-color: var(--color-primary);
-	color: var(--color-action);
-	transform: translateY(-2px);
-}
-
-.ctaButton:focus-visible {
-	outline: 2px solid var(--color-primary);
-	outline-offset: 4px;
-}
-
 .bottle {
 	--outline-size: 1rem;
 	--outline-u: calc(var(--outline-size) * 0.414 / var(--outline-scale, 1));
