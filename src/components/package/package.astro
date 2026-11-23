@@ -40,6 +40,27 @@ const storySteps: StoryStep[] = [
 	data-package-section
 >
 	<div class={styles.stickyStage}>
+		<div class={styles.waveBackdrop} aria-hidden="true">
+			<svg
+				class={`${styles.waveLayer} ${styles.waveBack}`}
+				data-package-wave-back
+				viewBox="0 0 2880 300"
+				preserveAspectRatio="none"
+				focusable="false"
+			>
+				<path d="M 0 92 C 60 74, 150 42, 240 42 C 365 42, 445 112, 580 112 C 725 112, 815 12, 980 12 C 1135 12, 1205 108, 1315 108 C 1350 108, 1380 110, 1440 92 C 1500 74, 1590 42, 1680 42 C 1805 42, 1885 112, 2020 112 C 2165 112, 2255 12, 2420 12 C 2575 12, 2645 108, 2755 108 C 2790 108, 2820 110, 2880 92 L 2880 302 L 0 302 Z" />
+			</svg>
+			<svg
+				class={`${styles.waveLayer} ${styles.waveFront}`}
+				data-package-wave-front
+				viewBox="0 0 2880 300"
+				preserveAspectRatio="none"
+				focusable="false"
+			>
+				<path d="M 0 112 C 60 94, 110 66, 175 66 C 275 66, 365 132, 495 132 C 640 132, 725 34, 905 34 C 1085 34, 1175 128, 1300 128 C 1345 128, 1380 130, 1440 112 C 1500 94, 1550 66, 1615 66 C 1715 66, 1805 132, 1935 132 C 2080 132, 2165 34, 2345 34 C 2525 34, 2615 128, 2740 128 C 2785 128, 2820 130, 2880 112 L 2880 302 L 0 302 Z" />
+			</svg>
+		</div>
+
 		<header class={styles.header}>
 			<h2 id="package-section-title" class={styles.title}>
 				Creamos un paquete para los amantes del picante
@@ -90,8 +111,23 @@ const storySteps: StoryStep[] = [
 
 <script>
 	const sections = document.querySelectorAll<HTMLElement>('[data-package-section]');
+	const supportsScrollDrivenWaves =
+		typeof CSS !== 'undefined' &&
+		CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
 
 	for (const section of sections) {
+		if (!supportsScrollDrivenWaves) {
+			const frontWave = section.querySelector<SVGElement>('[data-package-wave-front]');
+			const backWave = section.querySelector<SVGElement>('[data-package-wave-back]');
+			if (frontWave && backWave) {
+				import('./packageWaveFallback')
+					.then(({ initPackageWaveFallback }) => {
+						initPackageWaveFallback({ section, frontWave, backWave });
+					})
+					.catch(() => {});
+			}
+		}
+
 		const viewerFrame = section.querySelector<HTMLElement>('[data-package-viewer]');
 		const canvas = section.querySelector<HTMLCanvasElement>('[data-package-canvas]');
 		const scrollHint = section.querySelector<HTMLElement>('[data-package-hint]');
