@@ -23,10 +23,10 @@
 	user-select: none;
 	background-color: var(--color-primary);
 	opacity: 0.14;
-	-webkit-mask-image: var(--spicy-pattern);
+	-webkit-mask-image: url("/icons/spicy-pattern.svg");
 	-webkit-mask-repeat: repeat;
 	-webkit-mask-size: 350px 280px;
-	mask-image: var(--spicy-pattern);
+	mask-image: url("/icons/spicy-pattern.svg");
 	mask-repeat: repeat;
 	mask-size: 350px 280px;
 }

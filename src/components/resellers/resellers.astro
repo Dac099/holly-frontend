@@ -1,6 +1,4 @@
 ---
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import styles from './resellers.module.css';
 
 interface ReviewItem {
@@ -11,65 +9,6 @@ interface ReviewItem {
 	label: string;
 	alt: string;
 }
-
-const ICON_SIZE = 60;
-const ICON_GAP = 10;
-const CELL_STEP = ICON_SIZE + ICON_GAP;
-const TILE_COLS = 5;
-const TILE_ROWS = 4;
-const TILE_WIDTH = TILE_COLS * CELL_STEP;
-const TILE_HEIGHT = TILE_ROWS * CELL_STEP;
-const ROW_OFFSETS = [0, 32, 14, 48];
-const SLOT_ANGLES = [-14, 11, -7, 16, -12, 13, -16, 8, -10, 15, -6, 14, -15, 9, -11, 12, -8, 15, -13, 7];
-const SLOT_FLIPS = [1, -1, 1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, 1, -1, 1, -1];
-
-const spicySvgRaw = readFileSync(join(process.cwd(), 'public', 'icons', 'spicy.svg'), 'utf8');
-const viewBoxMatch = spicySvgRaw.match(/viewBox="([^"]+)"/);
-const pathMatch = spicySvgRaw.match(/<path[^>]*\sd="([^"]+)"/);
-const [vbX, vbY, vbW, vbH] = (viewBoxMatch?.[1] ?? '0 0 202.288 202.288')
-	.trim()
-	.split(/[\s,]+/)
-	.map(Number);
-const iconW = Number.isFinite(vbW) && vbW > 0 ? vbW : 202.288;
-const iconH = Number.isFinite(vbH) && vbH > 0 ? vbH : 202.288;
-const originX = (Number.isFinite(vbX) ? vbX : 0) + iconW / 2;
-const originY = (Number.isFinite(vbY) ? vbY : 0) + iconH / 2;
-const iconScale = ICON_SIZE / Math.max(iconW, iconH);
-const spicyPathData = (pathMatch?.[1] ?? '').replace(/\s+/g, ' ').trim();
-
-const useInstances: string[] = [];
-const pushIconUse = (x: number, y: number, deg: number, flip: number) => {
-	const cx = x + ICON_SIZE / 2;
-	const cy = y + ICON_SIZE / 2;
-	const sx = (iconScale * flip).toFixed(5);
-	const sy = iconScale.toFixed(5);
-	useInstances.push(
-		`<use href="#s" transform="translate(${cx.toFixed(2)} ${cy.toFixed(2)}) rotate(${deg}) scale(${sx} ${sy}) translate(${(-originX).toFixed(3)} ${(-originY).toFixed(3)})"/>`,
-	);
-};
-
-for (let row = 0; row < TILE_ROWS; row += 1) {
-	const y = ICON_GAP / 2 + row * CELL_STEP;
-	const rowOffset = ROW_OFFSETS[row % ROW_OFFSETS.length];
-
-	for (let col = 0; col < TILE_COLS; col += 1) {
-		const slotIndex = row * TILE_COLS + col;
-		const x = (rowOffset + col * CELL_STEP) % TILE_WIDTH;
-		const deg = SLOT_ANGLES[slotIndex % SLOT_ANGLES.length];
-		const flip = SLOT_FLIPS[slotIndex % SLOT_FLIPS.length];
-
-		pushIconUse(x, y, deg, flip);
-		if (x + ICON_SIZE >= TILE_WIDTH - ICON_GAP) {
-			pushIconUse(x - TILE_WIDTH, y, deg, flip);
-		}
-		if (x <= ICON_GAP) {
-			pushIconUse(x + TILE_WIDTH, y, deg, flip);
-		}
-	}
-}
-
-const tileSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${TILE_WIDTH}" height="${TILE_HEIGHT}" viewBox="0 0 ${TILE_WIDTH} ${TILE_HEIGHT}"><defs><path id="s" fill="#000" d="${spicyPathData}"/></defs>${useInstances.join('')}</svg>`;
-const spicyPatternUri = `data:image/svg+xml,${encodeURIComponent(tileSvg)}`;
 
 const reviews: ReviewItem[] = [
 	{
@@ -120,11 +59,7 @@ const reviews: ReviewItem[] = [
 	aria-labelledby="resellers-section-title"
 	data-resellers-section
 >
-	<div
-		class={styles.patternLayer}
-		style={`--spicy-pattern: url("${spicyPatternUri}")`}
-		aria-hidden="true"
-	></div>
+	<div class={styles.patternLayer} aria-hidden="true"></div>
 
 	<div class={styles.stageColumn} data-resellers-stage>
 		<div class={styles.reviewField} data-resellers-field>
