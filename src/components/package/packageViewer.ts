@@ -301,7 +301,7 @@ export function initPackageViewer({
 
 		renderer.outputColorSpace = THREE.SRGBColorSpace;
 		renderer.toneMapping = THREE.ACESFilmicToneMapping;
-		renderer.toneMappingExposure = 1.08;
+		renderer.toneMappingExposure = 0.86;
 		renderer.shadowMap.enabled = true;
 		renderer.shadowMap.type = THREE.PCFShadowMap;
 		// RGB matches --color-primary (#F1E5BC) with 0 alpha so PET transmission refracts warm cream seamlessly
@@ -314,7 +314,7 @@ export function initPackageViewer({
 		const roomEnvironment = new RoomEnvironment();
 		envRenderTarget = pmremGenerator.fromScene(roomEnvironment, 0.04);
 		scene.environment = envRenderTarget.texture;
-		scene.environmentIntensity = 0.85;
+		scene.environmentIntensity = 0.55;
 		roomEnvironment.dispose();
 
 		const width = viewerFrame.clientWidth || window.innerWidth;
@@ -322,10 +322,10 @@ export function initPackageViewer({
 		camera = new THREE.PerspectiveCamera(CAMERA_FOV, width / Math.max(1, height), 0.02, 20);
 
 		// Warm studio three-point lighting
-		const hemiLight = new THREE.HemisphereLight(0xfff9ec, 0xd8c79b, 0.75);
+		const hemiLight = new THREE.HemisphereLight(0xfff9ec, 0xd8c79b, 0.5);
 		scene.add(hemiLight);
 
-		const keyLight = new THREE.DirectionalLight(0xfff5e4, 1.85);
+		const keyLight = new THREE.DirectionalLight(0xfff5e4, 1.3);
 		keyLight.position.set(1.6, 3.1, 2.2);
 		keyLight.castShadow = true;
 		keyLight.shadow.mapSize.set(1024, 1024);
@@ -340,11 +340,11 @@ export function initPackageViewer({
 		keyLight.shadow.radius = 4;
 		scene.add(keyLight);
 
-		const fillLight = new THREE.DirectionalLight(0xffeed4, 0.6);
+		const fillLight = new THREE.DirectionalLight(0xffeed4, 0.42);
 		fillLight.position.set(-1.9, 1.6, 1.1);
 		scene.add(fillLight);
 
-		const rimLight = new THREE.DirectionalLight(0xfff2da, 0.45);
+		const rimLight = new THREE.DirectionalLight(0xfff2da, 0.32);
 		rimLight.position.set(-0.4, 2.0, -2.0);
 		scene.add(rimLight);
 
@@ -358,6 +358,18 @@ export function initPackageViewer({
 				model.traverse((obj) => {
 					if (!(obj instanceof THREE.Mesh)) return;
 					const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+					for (const mat of materials) {
+						if (
+							mat instanceof THREE.MeshStandardMaterial &&
+							/^(Mat_Caja_|Mat_Carton_)/i.test(mat.name)
+						) {
+							mat.roughness = Math.max(mat.roughness, 0.92);
+							mat.envMapIntensity = 0.35;
+							if (mat instanceof THREE.MeshPhysicalMaterial) {
+								mat.clearcoat = 0;
+							}
+						}
+					}
 					const isTransmissive = materials.some(
 						(mat) =>
 							mat instanceof THREE.MeshPhysicalMaterial &&
