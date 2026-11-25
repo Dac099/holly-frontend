@@ -1,0 +1,91 @@
+service: holly-frontend
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+
+resources:
+  Resources:
+    StoreBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+    StoreOAC:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties:
+        OriginAccessControlConfig:
+          Name: ${self:service}-oac-${sls:stage}
+          OriginAccessControlOriginType: s3
+          SigningBehavior: always
+          SigningProtocol: sigv4
+    UrlRewriteFunction:
+      Type: AWS::CloudFront::Function
+      Properties:
+        Name: ${self:service}-rewrite-${sls:stage}
+        AutoPublish: true
+        FunctionConfig:
+          Comment: Rewrite Astro directory routes to index.html
+          Runtime: cloudfront-js-2.0
+        FunctionCode: |
+          function handler(event) {
+            var request = event.request;
+            var uri = request.uri;
+            if(uri.endsWith('/')) {
+              request.uri += 'index.html';
+            }else if (!uri.includes('.')) {
+              request.uri += '/index.html';
+            }
+            return request;
+          }
+    StoreDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties: 
+        DistributionConfig:
+          Enabled: true
+          DefaultRootObject: index.html
+          Origins:
+            - Id: S3Origin
+              DomainName: !GetAtt StoreBucket.RegionalDomainName
+              OriginAccessControlId: !GetAtt StoreOAC.Id
+              S3OriginConfig: {}
+          DefaultCacheBehavior:
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt UrlRewriteFunction.FunctionARN
+    StoreBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref StoreBucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: cloudfront.amazonaws.com
+              Action: s3:GetObject
+              Resource: !Join ['', [!GetAtt StoreBucket.Arn, '/*']]
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Join
+                    - ''
+                    - - 'arn:aws:cloudfront::'
+                      - !Ref AWS::AccountId
+                      - ':distribution/'
+                      - !Ref StoreDistribution
+  Outputs:
+    BucketName:
+      Value: !Ref StoreBucket
+    DistributionId:
+      Value: !Ref StoreDistribution
+    StoreUrl:
+      Value: !Join ['', ['https://', !GetAtt StoreDistribution.DomainName]]
