@@ -4,7 +4,7 @@ frameworkVersion: '4'
 provider:
   name: aws
   region: us-east-1
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'prod'}
 
 resources:
   Resources:
@@ -49,6 +49,13 @@ resources:
         DistributionConfig:
           Enabled: true
           DefaultRootObject: index.html
+          Aliases:
+            - hollysalsa.com
+            - www.hollysalsa.com
+          ViewerCertificate:
+            AcmCertificateArn: arn:aws:acm:us-east-1:527626504461:certificate/320de0d9-8f48-444f-bda1-f66f20750eb7
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
           Origins:
             - Id: S3Origin
               DomainName: !GetAtt StoreBucket.RegionalDomainName
